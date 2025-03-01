@@ -1,32 +1,34 @@
-document.getElementById('imc-form').addEventListener('submit', function(event) {
-    event.preventDefault();
+const player = document.getElementById("player");
+const obstacle = document.getElementById("obstacle");
+let isJumping = false;
 
-    const weight = parseFloat(document.getElementById('weight').value);
-    const height = parseFloat(document.getElementById('height').value);
-
-    if (isNaN(weight) || isNaN(height) || weight <= 0 || height <= 0) {
-        alert("Insira a porra dos valores correspondentes ao seu peso e altura.");
-        return;
+// Função para pular
+function jump() {
+    if (!isJumping) {
+        isJumping = true;
+        player.classList.add("jump");
+        setTimeout(() => {
+            player.classList.remove("jump");
+            isJumping = false;
+        }, 500);
     }
+}
 
-    // Cálculo do IMC
-    const imc = weight / (height * height);
-
-    // Determinando a categoria do IMC
-    let category = '';
-
-    if (imc < 18.5) {
-        category = 'Abaixo do peso';
-    } else if (imc >= 18.5 && imc < 24.9) {
-        category = 'Peso normal';
-    } else if (imc >= 25 && imc < 29.9) {
-        category = 'Sobrepeso';
-    } else {
-        category = 'Obesidade';
-    }
-
-    // Exibindo o resultado
-    document.getElementById('imc-value').textContent = imc.toFixed(2);
-    document.getElementById('category').textContent = category;
-    document.getElementById('result').style.display = 'block';
+// Eventos para pular
+document.addEventListener("keydown", (event) => {
+    if (event.code === "Space") jump();
 });
+
+document.addEventListener("click", jump);
+document.addEventListener("touchstart", jump);
+
+// Verifica colisão
+setInterval(() => {
+    const playerBottom = parseInt(window.getComputedStyle(player).getPropertyValue("bottom"));
+    const obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("right"));
+
+    if (obstacleLeft > 20 && obstacleLeft < 60 && playerBottom < 30) {
+        alert("Game Over!");
+        location.reload();
+    }
+}, 50);
